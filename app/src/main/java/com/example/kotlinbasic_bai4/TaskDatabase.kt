@@ -1,4 +1,5 @@
 package com.example.kotlinbasic_bai4
+
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -10,8 +11,11 @@ class TaskDatabase(context: Context?) :
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_TASKS")
-        onCreate(db)
+        if (oldVersion != newVersion) {
+            db.execSQL("DROP TABLE IF EXISTS $TABLE_TASKS")
+            onCreate(db)
+        }
+
     }
 
     companion object {

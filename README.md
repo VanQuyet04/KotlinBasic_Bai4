@@ -1,4 +1,5 @@
  *** TASK APP
+ 
 TaskListScreen:
 -Hiển thị danh sách công việc từ cơ sở dữ liệu SQLite thông qua Content Provider.
 -Hiển thị danh sách các công việc đã lưu.

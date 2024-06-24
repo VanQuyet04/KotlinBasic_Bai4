@@ -1,6 +1,7 @@
 package com.example.kotlinbasic_bai4
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,13 +20,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddTaskScreen(navController: NavController) {
     val context = LocalContext.current
     val taskName = remember { mutableStateOf("") }
-    val taskDate = remember { mutableStateOf(LocalDate.now()) }
+    val taskDateTime = remember { mutableStateOf(LocalDateTime.now()) }
 
     Column(
         modifier = Modifier
@@ -39,17 +42,17 @@ fun AddTaskScreen(navController: NavController) {
             label = { Text("Task Name") }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        DatePickerButton(
-            date = taskDate.value,
-            onDateChange = { date ->
-                taskDate.value = date
+        DateTimePickerButton(
+            dateTime = taskDateTime.value,
+            onDateTimeChange = { dateTime ->
+                taskDateTime.value = dateTime
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
             val values = ContentValues().apply {
                 put(TaskDatabase.COLUMN_NAME, taskName.value)
-                put(TaskDatabase.COLUMN_DATE, taskDate.value.toString())
+                put(TaskDatabase.COLUMN_DATETIME, taskDateTime.value.toString())
             }
             context.contentResolver.insert(TaskProvider.CONTENT_URI, values)
             navController.popBackStack()
@@ -61,20 +64,40 @@ fun AddTaskScreen(navController: NavController) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DatePickerButton(date: LocalDate, onDateChange: (LocalDate) -> Unit) {
+fun DateTimePickerButton(dateTime: LocalDateTime, onDateTimeChange: (LocalDateTime) -> Unit) {
     val context = LocalContext.current
-    Button(onClick = {
-        val datePickerDialog = DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                onDateChange(LocalDate.of(year, month + 1, dayOfMonth))
-            },
-            date.year,
-            date.monthValue - 1,
-            date.dayOfMonth
-        )
-        datePickerDialog.show()
-    }) {
-        Text(text = "Pick Date: $date")
+
+    Column {
+        Button(onClick = {
+            val datePickerDialog = DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    val timePickerDialog = TimePickerDialog(
+                        context,
+                        { _, hourOfDay, minute ->
+                            val newDateTime = LocalDateTime.of(
+                                year,
+                                month + 1,
+                                dayOfMonth,
+                                hourOfDay,
+                                minute
+                            )
+                            onDateTimeChange(newDateTime)
+                        },
+                        dateTime.hour,
+                        dateTime.minute,
+                        true
+                    )
+                    timePickerDialog.show()
+                },
+                dateTime.year,
+                dateTime.monthValue - 1,
+                dateTime.dayOfMonth
+            )
+            datePickerDialog.datePicker.minDate = System.currentTimeMillis() - 1000
+            datePickerDialog.show()
+        }) {
+            Text("Pick Date and Time")
+        }
     }
 }

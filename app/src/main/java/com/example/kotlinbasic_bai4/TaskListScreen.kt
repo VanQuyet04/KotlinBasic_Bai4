@@ -36,11 +36,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.kotlinbasic_bai4.ui.theme.KotlinBasicBai4Theme
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class TaskListActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -63,14 +66,12 @@ class TaskListActivity : ComponentActivity() {
 fun TaskList() {
     val navController = rememberNavController()
     Scaffold(
-        topBar = {
-            TopAppBar(title = {
-                Text(text = "Task List")
-            })
-        },
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate("addTask") }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Task")
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Task"
+                )
             }
         },
         content = { inner ->
@@ -98,8 +99,11 @@ fun TaskListScreen() {
             while (it.moveToNext()) {
                 val id = it.getLong(it.getColumnIndexOrThrow(TaskDatabase.COLUMN_ID))
                 val name = it.getString(it.getColumnIndexOrThrow(TaskDatabase.COLUMN_NAME))
-                val date = it.getString(it.getColumnIndexOrThrow(TaskDatabase.COLUMN_DATE))
-                tasksList.add(Task(id, name, date))
+                val dateString =
+                    it.getString(it.getColumnIndexOrThrow(TaskDatabase.COLUMN_DATETIME))
+                val dateTime =
+                    LocalDateTime.parse(dateString) // Chuyển đổi String thành LocalDateTime
+                tasksList.add(Task(id, name, dateTime))
             }
             tasksList
         } ?: emptyList()
@@ -109,6 +113,11 @@ fun TaskListScreen() {
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(
+            text = "Task List",
+            modifier = Modifier.padding(16.dp), fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge
+        )
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -122,6 +131,7 @@ fun TaskListScreen() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TaskItem(task: Task) {
     Card(
@@ -131,7 +141,10 @@ fun TaskItem(task: Task) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = task.name, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = task.date, style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = task.dateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }

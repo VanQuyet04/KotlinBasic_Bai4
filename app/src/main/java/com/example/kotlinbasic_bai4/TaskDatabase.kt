@@ -1,3 +1,5 @@
+package com.example.kotlinbasic_bai4
+
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -18,7 +20,7 @@ class TaskDatabase(context: Context?) :
 
     companion object {
         private const val DATABASE_NAME = "tasks.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION =5
 
         const val TABLE_TASKS = "tasks"
         const val COLUMN_ID = "_id"

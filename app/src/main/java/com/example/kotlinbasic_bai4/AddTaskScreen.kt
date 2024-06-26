@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -27,6 +28,7 @@ fun AddTaskScreen(navController: NavController) {
     val context = LocalContext.current
     val taskName = remember { mutableStateOf("") }
     val taskDateTime = remember { mutableStateOf(LocalDateTime.now()) }
+    val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
     Column(
         modifier = Modifier
@@ -50,7 +52,7 @@ fun AddTaskScreen(navController: NavController) {
         Button(onClick = {
             val values = ContentValues().apply {
                 put(TaskDatabase.COLUMN_NAME, taskName.value)
-                put(TaskDatabase.COLUMN_DATETIME, taskDateTime.value.toString())
+                put(TaskDatabase.COLUMN_DATETIME, taskDateTime.value.format(dateTimeFormatter))
             }
             context.contentResolver.insert(TaskProvider.CONTENT_URI, values)
             navController.popBackStack()

@@ -1,6 +1,6 @@
 package com.example.kotlinbasic_bai4
 
-import TaskDatabase
+import android.annotation.SuppressLint
 import android.content.ContentProvider
 import android.content.ContentUris
 import android.content.ContentValues
@@ -10,7 +10,7 @@ import android.net.Uri
 
 class TaskProvider : ContentProvider() {
     companion object {
-        private const val AUTHORITY = "com.example.taskprovider"
+        private const val AUTHORITY = "com.example.task-provider"
         private const val BASE_PATH = "tasks"
         val CONTENT_URI: Uri = Uri.parse("content://$AUTHORITY/$BASE_PATH")
 
